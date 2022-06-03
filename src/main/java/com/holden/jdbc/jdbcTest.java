@@ -20,8 +20,6 @@ public class jdbcTest {
         System.out.println(execute);
         conn.commit();
 
-
-
         ps.close();
         conn.close();
 
