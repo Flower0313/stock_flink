@@ -40,36 +40,20 @@ public class StockTest {
         DataStreamSource<String> mysqlDS = env.addSource(mysql);
 
         mysqlDS.keyBy(x -> 1).map(new RichMapFunction<String, String>() {
-            private MapState<Integer, Double> mapState;
 
             @Override
             public void open(Configuration parameters) throws Exception {
-                mapState = getRuntimeContext().getMapState(new MapStateDescriptor<Integer, Double>("map", Integer.class, Double.class));
+                super.open(parameters);
             }
 
             @Override
             public void close() throws Exception {
-                mapState.clear();
+                super.close();
             }
 
             @Override
             public String map(String value) throws Exception {
-                JSONObject jsonObj = JSON.parseObject(value).getJSONObject("after");
-                int number = Integer.parseInt(jsonObj.get("number").toString());
-                double score = 0.0;
-                double diff = Double.parseDouble(jsonObj.get("diff").toString());
-                if (!"1".equals(String.valueOf(number))) {
-                    Double lastScore = mapState.get(number - 1);
-                    score = (diff + 4 * lastScore) / 5;
-                    mapState.put(number, score);
-                } else {
-                    score = Double.parseDouble(jsonObj.get("score").toString());
-                    mapState.put(number, Double.parseDouble(jsonObj.get("score").toString()));
-                }
-
-
-                String result = number + "\t\t" + diff + "\t\t" + score;
-                return result;
+                return null;
             }
         }).print();
 
